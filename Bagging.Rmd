@@ -1,0 +1,90 @@
+---
+title: "Bagging"
+output: html_document
+date: "2024-03-31"
+---
+# General Equation
+```{r}
+
+library(tree)  
+library(MASS)
+library(randomForest)
+#Bagging without Standardisation
+central <- read.csv("Central2024P.csv", stringsAsFactors = TRUE)
+
+attach(central)
+set.seed(9876)
+
+train<- sample(1:nrow(central), nrow(central)/2)
+test <- -train
+
+bag.central <- randomForest(Price~., data=central,ntree=1000,subset=train,mtry=5,importance=TRUE)
+
+yhat.bag <- predict(bag.central,newdata=central[test,])
+central.test<-central[test,"Price"]
+
+mean((yhat.bag-central.test)^2)
+
+plot(yhat.bag,central.test, main="Bagging prodcedure", xlab="predicted value", ylab="observed value")
+abline(0,1)
+
+importance(bag.central)
+```
+
+```{r}
+#Bagging with Standardisation
+setwd("C:/Users/grace/OneDrive/Desktop/SMU Y4/SEM 2/DSA211 Stat Learning w R/Group Project")
+central <- read.csv("Central2024P.csv", stringsAsFactors = TRUE)
+central <- central |> dplyr::mutate_if(is.numeric,scale)
+
+set.seed(9876)
+
+train<- sample(1:nrow(central), nrow(central)/2)
+test <- -train
+
+bag.central <- randomForest(Price~., data=central,ntree=1000,subset=train,mtry=5,importance=TRUE)
+# Run into error because standardised Area has negative value, log(Area) cannot be calculated
+
+yhat.bag <- predict(bag.central,newdata=central[test,])
+central.test<-central[test,"Price"]
+
+mean((yhat.bag-central.test)^2)
+```
+# Derived Equation
+
+```{r}
+#Bagging without Standardisation
+setwd("C:/Users/grace/OneDrive/Desktop/SMU Y4/SEM 2/DSA211 Stat Learning w R/Group Project")
+central <- read.csv("Central2024P.csv", stringsAsFactors = TRUE)
+
+set.seed(9876)
+
+train<- sample(1:nrow(central), nrow(central)/2)
+test <- -train
+
+bag.central <- randomForest(Price~ log(Area) + Area*Age + Area*Tenure + Area*Region, data=central,ntree=1000,subset=train,mtry=5,importance=TRUE)
+
+yhat.bag <- predict(bag.central,newdata=central[test,])
+central.test<-central[test,"Price"]
+
+mean((yhat.bag-central.test)^2)
+```
+
+```{r}
+#Bagging with Standardisation
+setwd("C:/Users/grace/OneDrive/Desktop/SMU Y4/SEM 2/DSA211 Stat Learning w R/Group Project")
+central <- read.csv("Central2024P.csv", stringsAsFactors = TRUE)
+central <- CENTRAL |> dplyr::mutate_if(is.numeric,scale)
+
+View(central)
+attach(central)
+set.seed(1234)
+
+bag.central <- randomForest(Price~ log(Area) + Area*Age + Area*Tenure + Area*Region, data=central,ntree=1000,subset=train,mtry=5,importance=TRUE)
+# Run into error because standardised Area has negative value, log(Area) cannot be calculated
+
+yhat.bag <- predict(bag.central,newdata=central[test1,])
+central.test1<-central[test1,"Price"]
+
+mean((yhat.bag-central.test1)^2)
+```

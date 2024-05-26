@@ -1,0 +1,111 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+---
+title: "Project"
+output: html_document
+date: "2024-03-27"
+---
+
+```{r}
+library(tree)  
+library(MASS)
+library(randomForest)
+
+# setting up training and testing dataset per chapter 10
+setwd("C:/Users/grace/OneDrive/Desktop/SMU Y4/SEM 2/DSA211 Stat Learning w R/Group Project")
+central <- read.csv("Central2024P.csv", stringsAsFactors = TRUE)
+RNGkind(sample.kind = "Rounding")
+set.seed(1234)
+train1 <- sample(1:nrow(central), nrow(central)/2)
+test1 <- -train1
+
+# Random Forest using 1000 trees
+rf_central <- randomForest(Price~., data=central, ntree=1000,
+                          subset=train1, mtry=3, importance=TRUE) #mtry = sqrt(p) = sqrt(13) = 4
+yhat.rf <- predict(rf_central, newdata=central)
+y <- central$Price
+mean((yhat.rf - y)^2)
+```
+
+# standardisation 
+```{r}
+library(tree)  
+library(MASS)
+library(randomForest)
+
+# setting up training and testing dataset per chapter 10
+setwd("C:/Users/grace/OneDrive/Desktop/SMU Y4/SEM 2/DSA211 Stat Learning w R/Group Project")
+CENTRAL <- read.csv("Central2024P.csv", stringsAsFactors = TRUE)
+central <- CENTRAL |> dplyr::mutate_if(is.numeric,scale)
+RNGkind(sample.kind = "Rounding")
+set.seed(1234)
+train1 <- sample(1:nrow(central), nrow(central)/2)
+test1 <- -train1
+
+# Random Forest using 1000 trees
+rf_central <- randomForest(Price~., data=central, ntree=1000,
+                          subset=train1, mtry=3, importance=TRUE) #mtry = sqrt(p) = sqrt(13) = 4
+yhat.rf <- predict(rf_central, newdata=central)
+y <- central$Price
+mean((yhat.rf - y)^2)
+```
+
+```{r}
+library(tree)  
+library(MASS)
+library(randomForest)
+
+# setting up training and testing dataset per chapter 10
+setwd("C:/Users/grace/OneDrive/Desktop/SMU Y4/SEM 2/DSA211 Stat Learning w R/Group Project")
+central <- read.csv("Central2024P.csv", stringsAsFactors = TRUE)
+RNGkind(sample.kind = "Rounding")
+set.seed(1234)
+train1 <- sample(1:nrow(central), nrow(central)/2)
+test1 <- -train1
+
+# Random Forest using 1000 trees
+rf_central <- randomForest(Price~ log(Area) + Area*Age + Area*Tenure + Area*Region, data=central, ntree=1000,
+                          subset=train1, mtry=3, importance=TRUE) #mtry = sqrt(p) = sqrt(13) = 4
+yhat.rf <- predict(rf_central, newdata=central)
+y <- central$Price
+mean((yhat.rf-y)^2)
+```
+
+```{r}
+library(tree)  
+library(MASS)
+attach(Boston)
+library(randomForest)
+
+# setting up training and testing dataset per chapter 10
+setwd("C:/Users/grace/OneDrive/Desktop/SMU Y4/SEM 2/DSA211 Stat Learning w R/Group Project")
+CENTRAL <- read.csv("Central2024P.csv", stringsAsFactors = TRUE)
+central <- CENTRAL |> dplyr::mutate_if(is.numeric,scale)
+RNGkind(sample.kind = "Rounding")
+set.seed(1234)
+train1 <- sample(1:nrow(central), nrow(central)/2)
+test1 <- -train1
+# Check for missing values in log(Area)
+missing_log_area <- sum(is.na(central$log_Area))
+# Check for missing values in Age
+ missing_age <- sum(is.na(central$Age))
+# Check for missing values in Tenure
+missing_tenure <- sum(is.na(central$Tenure))
+# Check for missing values in Region
+missing_region <- sum(is.na(central$Region))
+
+# Print the number of missing values for each variable
+print(missing_log_area)
+print(missing_age)
+print(missing_tenure)
+print(missing_region)
+
+# Random Forest using 1000 trees
+rf_central <- randomForest(Price~ log(Area) + Area*Age + Area*Tenure + Area*Region, data=central, ntree=1000, subset=train1, mtry=3, importance=TRUE) 
+yhat.rf <- predict(rf_central, newdata=central)
+y <- central$Price
+mean((yhat.rf - y)^2)
+```
+```

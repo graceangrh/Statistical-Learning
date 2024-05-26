@@ -1,0 +1,30 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+---
+title: "Project"
+output: html_document
+date: "2024-03-27"
+---
+
+```{r}
+library(tree)  
+library(MASS)
+library(randomForest)
+
+setwd("C:/Users/grace/OneDrive/Desktop/SMU Y4/SEM 2/DSA211 Stat Learning w R/Group Project")
+central <- read.csv("Central2024P.csv", stringsAsFactors = TRUE)
+
+set.seed(9876)
+train1 <- sample(1:nrow(central), nrow(central)/2)
+test1 <- -train1
+
+# Random Forest using 1000 trees
+rf_central <- randomForest(Price~ log(Area) + Area*Age + Area*Tenure + Area*Region, data=central, ntree=1000,subset=train1, mtry=3, importance=TRUE) #mtry = sqrt(p) = sqrt(13) = 4
+
+yhat.rf <- predict(rf_central, newdata=central)
+y <- central$Price
+mean((yhat.rf-y)^2)
+```
+
